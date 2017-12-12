@@ -14,11 +14,11 @@ type Config struct {
 	Data      string
 	Host      string
 	Port      string
-	Database  string
-	User      string
-	Password  string
-	Schema    string
-	VHost     string
+	Db        string
+	U         string
+	Pass      string
+	Sch       string
+	Vhost     string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
@@ -27,6 +27,6 @@ type Config struct {
 func FindConfigByTypeAndData(ctx context.Context, typ, data string) (*Config, error) {
 	var config Config
 	_, err := session.Database(ctx).
-		QueryOne(&config, `SELECT * FROM configurations WHERE t = ? AND data = ?`, typ, data)
+		QueryOne(&config, `SELECT * FROM configurations WHERE t = ? AND d = ?`, typ, data)
 	return &config, err
 }

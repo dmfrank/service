@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -12,23 +13,20 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
+const (
+	ip   = "0.0.0.0"
+	port = "8080"
+)
+
 func main() {
 	router := gin.Default()
-
 	router.Use(middlewares.WithDatabase(models.InitDb()))
-	router.GET("/", index)
 
 	controllers.Config(router)
 
 	server := &http.Server{
-		Addr:    ":8080",
+		Addr:    fmt.Sprintf("%s:%s", ip, port),
 		Handler: router,
 	}
-
 	log.Fatal(server.ListenAndServe())
-}
-
-func index(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "hello world"})
-	log.Println("hello index")
 }

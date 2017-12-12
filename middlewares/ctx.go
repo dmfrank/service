@@ -9,29 +9,26 @@ import (
 	"github.com/go-pg/pg"
 )
 
-const keyContext = "context"
-const keyConfig = "config"
+const keyCfg = "cfg"
+const keyCtx = "ctx"
 
+// WithDatabase sets database session to Context
 func WithDatabase(db *pg.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ctx := c.Request.Context()
-		ctx = session.WithDatabase(ctx, db)
-		c.Set(keyContext, ctx)
+		c.Set(keyCtx, session.WithDatabase(c.Request.Context(), db))
 		c.Next()
 	}
 }
 
+// WithConfig sets config to Context
 func WithConfig(c *gin.Context, config *models.Config) {
-	ctx := Context(c)
-	ctx = context.WithValue(ctx, keyConfig, config)
-	c.Set(keyContext, ctx)
+	c.Set(keyCtx, context.WithValue(Context(c), keyCfg, config))
 }
 
 func Context(c *gin.Context) context.Context {
-	return c.MustGet(keyContext).(context.Context)
+	return c.MustGet(keyCtx).(context.Context)
 }
 
 func Config(c *gin.Context) *models.Config {
-	ctx := Context(c)
-	return ctx.Value(keyConfig).(*models.Config)
+	return Context(c).Value(keyCfg).(*models.Config)
 }

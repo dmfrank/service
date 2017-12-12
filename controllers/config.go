@@ -20,7 +20,12 @@ type configRequest struct {
 // Config sets configuration endpoint
 func Config(router *gin.Engine) {
 	c := &config{}
-	router.GET("/config", c.show)
+	router.GET("/", c.index)
+	router.POST("/config", c.show)
+}
+
+func (cfg *config) index(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
 }
 
 func (cfg *config) show(c *gin.Context) {
@@ -29,7 +34,10 @@ func (cfg *config) show(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
-	} else if config, e := models.FindConfigByTypeAndData(middlewares.Context(c), body.Type, body.Data); config == nil {
+	} else if config, e := models.FindConfigByTypeAndData(
+		middlewares.Context(c),
+		body.Type,
+		body.Data); config == nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": e.Error()})
 	} else {
 		c.JSON(http.StatusOK, views.BuildConfigView(config))
